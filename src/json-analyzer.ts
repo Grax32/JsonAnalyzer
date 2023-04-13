@@ -139,6 +139,20 @@ function visitJsonDocument(json: string) {
         return previous;
     }, {} as { [key: string]: { [key: string]: JsonVisitorCollectionKeys; }; });
 
-    document.getElementById("result")!.innerHTML = JSON.stringify(mergedResults, null, 2);
+
+    const outputText = '<h2>Collections</h2>' + Object.entries( mergedResults).reduce((previous, current) => {
+        const [collectionName, properties] = current;
+
+        const resultText = '<table>' + Object.entries(properties).reduce((previous, current) => {
+            const [key, value] = current;
+            const prettyKey = key.replace(collectionName + '.', '');
+            return previous + `<tr><td>&nbsp;&nbsp;</td><td>${prettyKey}</td><td>${value}</td></tr>\n`;
+        }, "") + '</table>';
+
+        return previous + '<b>' + collectionName + '</b><br/>\n' + resultText;
+    }, "");
+        
+
+    document.getElementById("result")!.innerHTML = outputText; //JSON.stringify(mergedResults, null, 2);
     console.log('done visiting');
 }
