@@ -1,14 +1,13 @@
 
-import { JsonDataType, JsonDataTypeClass, JsonVisitorCollection, JsonVisitorCollectionKeys, getJsonDataType, getJsonDataTypeClass, visitJsonNode } from './json-analyzer-module';
+import { JsonDataType, JsonDataTypeClass, JsonVisitorCollectionKeys, getJsonDataType, getJsonDataTypeClass, visitJsonNode } from './json-analyzer-module';
 
 document.addEventListener("DOMContentLoaded", function () {
-
     var json = document.getElementById("sample-json")!.innerHTML;
-    var obj = JSON.parse(json);
+    visitJsonDocument(json);
+});
 
-    // function visitObject(path: string, value: any) {
-    //     console.log(path + ": " + value);
-    // }
+function visitJsonDocument(json: string) {
+    var obj = JSON.parse(json);
 
     function visitArray(path: string, value: any) {
         console.log('visiting array', path, value);
@@ -53,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
             getPropertyNames(path, arrayValue);
         }
 
-
         function mapToClassification(dataTypes: JsonDataType[]): JsonVisitorCollectionKeys {
 
             if (dataTypes.length === 1) {
@@ -79,28 +77,9 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('results', results);
     }
 
-    // function visitValues(path: string, value: any) {
-    //     console.log(path + ": " + value);
-    // }
-
-    // function visitAny(path: string, _value: any) {
-    //     console.log("any: " + path);
-    // }
-
-    // const visitors = {
-    //     "object": visitObject,
-    //     "array": visitArray,
-    //     "values": visitValues,
-    //     "any": visitAny
-    // };
-
-    const visitors = {
-        // "object": visitObject,
-        "array": visitArray
-    };
+    const visitors = { "array": visitArray };
 
     console.log('prepare to visit');
     visitJsonNode(obj, "", visitors);
     console.log('done visiting');
-});
-
+}
