@@ -12,7 +12,13 @@ function getSampleJson() {
 function analyze() {
     const textArea = document.getElementById("json");
     const json = textArea.value;
-    visitJsonDocument(json);
+    document.getElementById("result").innerHTML = 'Analyzing...';
+    try {
+        visitJsonDocument(json);
+    }
+    catch (e) {
+        document.getElementById("result").innerHTML = 'Analyze failed with Error: ' + e;
+    }
 }
 async function demo() {
     const sampleJson = getSampleJson();
@@ -116,6 +122,6 @@ function visitJsonDocument(json) {
         }, "") + '</table>';
         return previous + '<b>' + collectionName + '</b><br/>\n' + resultText;
     }, "");
-    document.getElementById("result").innerHTML = outputText; //JSON.stringify(mergedResults, null, 2);
+    document.getElementById("result").innerHTML = outputText;
     console.log('done visiting');
 }
