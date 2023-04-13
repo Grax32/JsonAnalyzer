@@ -70,6 +70,6 @@ function visitJsonDocument(json) {
     const visitors = { "array": visitArray };
     console.log('prepare to visit');
     const results = (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
-    document.getElementById("results").innerHTML = JSON.stringify(results, null, 2);
+    document.getElementById("result").innerHTML = JSON.stringify(results, null, 2);
     console.log('done visiting');
 }

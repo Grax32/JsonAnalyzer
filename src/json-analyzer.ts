@@ -99,6 +99,6 @@ function visitJsonDocument(json: string) {
 
     console.log('prepare to visit');
     const results = visitJsonNode(obj, "", visitors);
-    document.getElementById("results")!.innerHTML = JSON.stringify(results, null, 2);
+    document.getElementById("result")!.innerHTML = JSON.stringify(results, null, 2);
     console.log('done visiting');
 }
