@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function visitJsonDocument(json: string) {
     var obj = JSON.parse(json);
+    const allResults: { path: string; results: { [key: string]: JsonVisitorCollectionKeys; }; }[] = [];
 
     function visitArray(path: string, value: any) {
         console.log('visiting array', path, value);
@@ -91,14 +92,14 @@ function visitJsonDocument(json: string) {
         }
 
         const results = Object.entries(allKeys).reduce(reduceTypes, {});
-
-        return results;
+        const resultObj = { path, results };
+        allResults.push(resultObj);
     }
 
     const visitors = { "array": visitArray };
 
     console.log('prepare to visit');
     const results = visitJsonNode(obj, "", visitors);
-    document.getElementById("result")!.innerHTML = JSON.stringify(results, null, 2);
+    document.getElementById("result")!.innerHTML = JSON.stringify(allResults, null, 2);
     console.log('done visiting');
 }

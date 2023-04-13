@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 function visitJsonDocument(json) {
     var obj = JSON.parse(json);
+    const allResults = [];
     function visitArray(path, value) {
         console.log('visiting array', path, value);
         const arrayValues = value.filter((v) => v);
@@ -65,11 +66,12 @@ function visitJsonDocument(json) {
             return previous;
         }
         const results = Object.entries(allKeys).reduce(reduceTypes, {});
-        return results;
+        const resultObj = { path, results };
+        allResults.push(resultObj);
     }
     const visitors = { "array": visitArray };
     console.log('prepare to visit');
     const results = (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
-    document.getElementById("result").innerHTML = JSON.stringify(results, null, 2);
+    document.getElementById("result").innerHTML = JSON.stringify(allResults, null, 2);
     console.log('done visiting');
 }
