@@ -65,6 +65,7 @@ module.exports={
         }
     ]
 }
+
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -285,5 +286,70 @@ function visitJsonDocument(json) {
 }
 
 },{"./data.json":1,"./json-analyzer-module":2}],4:[function(require,module,exports){
-arguments[4][1][0].apply(exports,arguments)
-},{"dup":1}]},{},[4,3]);
+module.exports={
+    "Actors": [
+        null,
+        {
+            "name": "Tom Cruise",
+            "age": 56,
+            "Born At": "Syracuse, NY",
+            "Birthdate": "July 3, 1962",
+            "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
+            "wife": null,
+            "weight": 67.5,
+            "hasChildren": true,
+            "hasGreyHair": false,
+            "children": [
+                {
+                    "name": "Connor Cruise",
+                    "age": 25,
+                    "weight": 75.5
+                },
+                {
+                    "name": "Isabella Cruise",
+                    "age": 26
+                }
+            ]
+        },
+        {
+            "name": "Robert Downey Jr.",
+            "age": "fifty-three",
+            "Born At": "New York City, NY",
+            "Birthdate": "April 4, 1965",
+            "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg",
+            "wife": "Susan Downey",
+            "weight": 77.1,
+            "hasChildren": {
+                "yes": 1,
+                "no": 0
+            },
+            "hasGreyHair": false,
+            "mixedArray": [
+                1,
+                "two",
+                3,
+                "four",
+                5,
+                {},
+                []
+            ],
+            "children": [
+                {
+                    "name": "Indio Falconer Downey",
+                    "age": 23,
+                    "eye-color": "brown"
+                },
+                {
+                    "name": "Exton Elias Downey",
+                    "age": 8
+                }
+            ],
+            "awards": {
+                "Oscar": 2,
+                "Golden Globe": 3,
+                "BAFTA": 1
+            }
+        }
+    ]
+}
+},{}]},{},[4,3]);
