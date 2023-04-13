@@ -1,16 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const json_analyzer_module_1 = require("./json-analyzer-module");
+const data_json_1 = __importDefault(require("./data.json"));
+function getSampleJson() {
+    const jsonSampleSource = JSON.stringify(data_json_1.default, null, 2);
+    return jsonSampleSource;
+}
 function analyze() {
     const textArea = document.getElementById("json");
     const json = textArea.value;
     visitJsonDocument(json);
 }
-function demo() {
-    const jsonSource = document.getElementById("sample-json").innerHTML;
-    const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+async function demo() {
+    const sampleJson = getSampleJson();
+    const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
     const textArea = document.getElementById("json");
-    textArea.value = json;
+    textArea.value = jsonSampleSource;
     analyze();
 }
 document.addEventListener("DOMContentLoaded", function () {
@@ -71,7 +79,34 @@ function visitJsonDocument(json) {
     }
     const visitors = { "array": visitArray };
     console.log('prepare to visit');
-    const results = (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
-    document.getElementById("result").innerHTML = JSON.stringify(allResults, null, 2);
+    (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
+    const mergedResults = allResults.reduce((previous, current) => {
+        const { path, results } = current;
+        if (previous[path]) {
+            const left = previous[path];
+            const right = results;
+            for (let key of Object.keys(left)) {
+                if (!right[key]) {
+                    right[key] = left[key];
+                }
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+            for (let key of Object.keys(right)) {
+                if (!left[key]) {
+                    left[key] = right[key];
+                }
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+        }
+        else {
+            previous[path] = results;
+        }
+        return previous;
+    }, {});
+    document.getElementById("result").innerHTML = JSON.stringify(mergedResults, null, 2);
     console.log('done visiting');
 }

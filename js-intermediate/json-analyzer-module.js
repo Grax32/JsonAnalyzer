@@ -65,7 +65,8 @@ function visitVisitors(dataType, visitors) {
 }
 function visitJsonArray(array, path, visitTypes) {
     for (let [index, arrayValue] of array.map((v, i) => [i, v])) {
-        visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
+        visitJsonNode(arrayValue, path + '[]', visitTypes);
+        // visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
     }
 }
 exports.visitJsonArray = visitJsonArray;

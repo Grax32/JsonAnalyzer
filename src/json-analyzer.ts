@@ -1,5 +1,12 @@
 
 import { JsonDataType, JsonDataTypeClass, JsonVisitorCollectionKeys, getJsonDataType, getJsonDataTypeClass, visitJsonNode } from './json-analyzer-module';
+import { default as dataDotJson } from './data.json';
+
+
+function getSampleJson() {
+    const jsonSampleSource = JSON.stringify(dataDotJson, null, 2);
+    return jsonSampleSource;
+}
 
 function analyze() {
     const textArea = document.getElementById("json") as HTMLTextAreaElement;
@@ -8,13 +15,12 @@ function analyze() {
     visitJsonDocument(json);
 }
 
-function demo() {
-    const jsonSource = document.getElementById("sample-json")!.innerHTML;
-
-    const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+async function demo(): Promise<void> {
+    const sampleJson = getSampleJson();
+    const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
 
     const textArea = document.getElementById("json") as HTMLTextAreaElement;
-    textArea.value = json;
+    textArea.value = jsonSampleSource;
 
     analyze();
 }
@@ -99,7 +105,40 @@ function visitJsonDocument(json: string) {
     const visitors = { "array": visitArray };
 
     console.log('prepare to visit');
-    const results = visitJsonNode(obj, "", visitors);
-    document.getElementById("result")!.innerHTML = JSON.stringify(allResults, null, 2);
+    visitJsonNode(obj, "", visitors);
+
+    const mergedResults = allResults.reduce((previous, current) => {
+        const { path, results } = current;
+        if (previous[path]) {
+            const left = previous[path]!;
+            const right = results!;
+
+            for (let key of Object.keys(left)) {
+                if (!right[key]) {
+                    right[key] = left[key]!;
+                }
+
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+
+            for (let key of Object.keys(right)) {
+                if (!left[key]) {
+                    left[key] = right[key]!;
+                }
+
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+
+        } else {
+            previous[path] = results;
+        }
+        return previous;
+    }, {} as { [key: string]: { [key: string]: JsonVisitorCollectionKeys; }; });
+
+    document.getElementById("result")!.innerHTML = JSON.stringify(mergedResults, null, 2);
     console.log('done visiting');
 }

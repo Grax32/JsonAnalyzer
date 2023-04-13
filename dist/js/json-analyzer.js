@@ -1,4 +1,71 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+module.exports={
+    "Actors": [
+        null,
+        {
+            "name": "Tom Cruise",
+            "age": 56,
+            "Born At": "Syracuse, NY",
+            "Birthdate": "July 3, 1962",
+            "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
+            "wife": null,
+            "weight": 67.5,
+            "hasChildren": true,
+            "hasGreyHair": false,
+            "children": [
+                {
+                    "name": "Connor Cruise",
+                    "age": 25,
+                    "weight": 75.5
+                },
+                {
+                    "name": "Isabella Cruise",
+                    "age": 26
+                }
+            ]
+        },
+        {
+            "name": "Robert Downey Jr.",
+            "age": "fifty-three",
+            "Born At": "New York City, NY",
+            "Birthdate": "April 4, 1965",
+            "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg",
+            "wife": "Susan Downey",
+            "weight": 77.1,
+            "hasChildren": {
+                "yes": 1,
+                "no": 0
+            },
+            "hasGreyHair": false,
+            "mixedArray": [
+                1,
+                "two",
+                3,
+                "four",
+                5,
+                {},
+                []
+            ],
+            "children": [
+                {
+                    "name": "Indio Falconer Downey",
+                    "age": 23,
+                    "eye-color": "brown"
+                },
+                {
+                    "name": "Exton Elias Downey",
+                    "age": 8
+                }
+            ],
+            "awards": {
+                "Oscar": 2,
+                "Golden Globe": 3,
+                "BAFTA": 1
+            }
+        }
+    ]
+}
+},{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.visitJsonNode = exports.visitJsonObject = exports.visitJsonArray = exports.getJsonDataTypeClass = exports.getJsonDataType = exports.JsonDataTypeClass = exports.JsonDataType = void 0;
@@ -66,7 +133,8 @@ function visitVisitors(dataType, visitors) {
 }
 function visitJsonArray(array, path, visitTypes) {
     for (let [index, arrayValue] of array.map((v, i) => [i, v])) {
-        visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
+        visitJsonNode(arrayValue, path + '[]', visitTypes);
+        // visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
     }
 }
 exports.visitJsonArray = visitJsonArray;
@@ -93,20 +161,28 @@ function visitJsonNode(obj, path, visitTypes) {
 }
 exports.visitJsonNode = visitJsonNode;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const json_analyzer_module_1 = require("./json-analyzer-module");
+const data_json_1 = __importDefault(require("./data.json"));
+function getSampleJson() {
+    const jsonSampleSource = JSON.stringify(data_json_1.default, null, 2);
+    return jsonSampleSource;
+}
 function analyze() {
     const textArea = document.getElementById("json");
     const json = textArea.value;
     visitJsonDocument(json);
 }
-function demo() {
-    const jsonSource = document.getElementById("sample-json").innerHTML;
-    const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+async function demo() {
+    const sampleJson = getSampleJson();
+    const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
     const textArea = document.getElementById("json");
-    textArea.value = json;
+    textArea.value = jsonSampleSource;
     analyze();
 }
 document.addEventListener("DOMContentLoaded", function () {
@@ -167,9 +243,38 @@ function visitJsonDocument(json) {
     }
     const visitors = { "array": visitArray };
     console.log('prepare to visit');
-    const results = (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
-    document.getElementById("result").innerHTML = JSON.stringify(allResults, null, 2);
+    (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
+    const mergedResults = allResults.reduce((previous, current) => {
+        const { path, results } = current;
+        if (previous[path]) {
+            const left = previous[path];
+            const right = results;
+            for (let key of Object.keys(left)) {
+                if (!right[key]) {
+                    right[key] = left[key];
+                }
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+            for (let key of Object.keys(right)) {
+                if (!left[key]) {
+                    left[key] = right[key];
+                }
+                if (left[key] !== right[key]) {
+                    left[key] = "any";
+                }
+            }
+        }
+        else {
+            previous[path] = results;
+        }
+        return previous;
+    }, {});
+    document.getElementById("result").innerHTML = JSON.stringify(mergedResults, null, 2);
     console.log('done visiting');
 }
 
-},{"./json-analyzer-module":1}]},{},[2]);
+},{"./data.json":1,"./json-analyzer-module":2}],4:[function(require,module,exports){
+arguments[4][1][0].apply(exports,arguments)
+},{"dup":1}]},{},[4,3]);

@@ -68,7 +68,8 @@ function visitVisitors(dataType: JsonDataType, visitors: JsonVisitorCollection):
 
 export function visitJsonArray(array: any[], path: string, visitTypes: { [key: string]: (path: string, value: any) => void }) {
     for (let [index, arrayValue] of array.map((v: any, i: number) => [i, v])) {
-        visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
+        visitJsonNode(arrayValue, path + '[]', visitTypes);
+        // visitJsonNode(arrayValue, path + '[' + index + ']', visitTypes);
     }
 }
 

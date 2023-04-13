@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "prestart": "npm run build",
-    "build": "tsc && browserify js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
+    "build": "tsc && xcopy /y src\\data.json js-intermediate && browserify src/data.json js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
     "tsc-init": "tsc --init",
     "publish": "git add . && git commit -m publish && git push"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.15.11",
     "browserify": "^17.0.0",
     "typescript": "^5.0.4"
   }
