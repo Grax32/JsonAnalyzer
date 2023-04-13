@@ -10,10 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
     function demo() {
         const jsonSource = document.getElementById("sample-json")!.innerHTML;
 
+        const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+
         const textArea = document.getElementById("json") as HTMLTextAreaElement;
         textArea.value = json;
 
-        visitJsonDocument(jsonSource);
+        visitJsonDocument(json);
     }
 });
 
