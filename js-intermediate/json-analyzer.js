@@ -3,10 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const json_analyzer_module_1 = require("./json-analyzer-module");
 document.addEventListener("DOMContentLoaded", function () {
     var json = document.getElementById("sample-json").innerHTML;
+    visitJsonDocument(json);
+    document.getElementById("demoButton").addEventListener("click", demo);
+    function demo() {
+        const jsonSource = document.getElementById("sample-json").innerHTML;
+        const textArea = document.getElementById("json");
+        textArea.value = json;
+        visitJsonDocument(jsonSource);
+    }
+});
+function visitJsonDocument(json) {
     var obj = JSON.parse(json);
-    // function visitObject(path: string, value: any) {
-    //     console.log(path + ": " + value);
-    // }
     function visitArray(path, value) {
         console.log('visiting array', path, value);
         const arrayValues = value.filter((v) => v);
@@ -56,26 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('allKeys', allKeys);
         console.log('results', results);
     }
-    // function visitValues(path: string, value: any) {
-    //     console.log(path + ": " + value);
-    // }
-    // function visitAny(path: string, _value: any) {
-    //     console.log("any: " + path);
-    // }
-    // const visitors = {
-    //     "object": visitObject,
-    //     "array": visitArray,
-    //     "values": visitValues,
-    //     "any": visitAny
-    // };
-    const visitors = {
-        // "object": visitObject,
-        "array": visitArray
-    };
+    const visitors = { "array": visitArray };
     console.log('prepare to visit');
     (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
     console.log('done visiting');
-});
-function every(arrayPropertyTypeClasses, arg1) {
-    throw new Error('Function not implemented.');
 }

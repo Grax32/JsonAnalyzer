@@ -4,6 +4,17 @@ import { JsonDataType, JsonDataTypeClass, JsonVisitorCollectionKeys, getJsonData
 document.addEventListener("DOMContentLoaded", function () {
     var json = document.getElementById("sample-json")!.innerHTML;
     visitJsonDocument(json);
+
+    document.getElementById("demoButton")!.addEventListener("click", demo);
+
+    function demo() {
+        const jsonSource = document.getElementById("sample-json")!.innerHTML;
+
+        const textArea = document.getElementById("json") as HTMLTextAreaElement;
+        textArea.value = json;
+
+        visitJsonDocument(jsonSource);
+    }
 });
 
 function visitJsonDocument(json: string) {

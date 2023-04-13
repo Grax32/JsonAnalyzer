@@ -13,7 +13,7 @@
     <p>Enter a JSON string to analyze:</p>
     <textarea id="json" rows="10" cols="80"></textarea>
     <p><button onclick="analyze()">Analyze</button></p>
-    <p><button onclick="demo()">Demo</button></p>
+    <p><button id="demoButton">Demo</button></p>
     <p id="result"></p>
     <script>
         function analyze() {
@@ -21,11 +21,6 @@
             visitJsonDocument(json);
         }
 
-        function demo() {
-            var json = document.getElementById("sample-json").innerHTML;
-            document.getElementById("json").value = json;
-            visitJsonDocument(json);
-        }
     </script>
 
     <template id="sample-json">
