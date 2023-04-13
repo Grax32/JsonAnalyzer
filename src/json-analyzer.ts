@@ -103,7 +103,4 @@ document.addEventListener("DOMContentLoaded", function () {
     visitJsonNode(obj, "", visitors);
     console.log('done visiting');
 });
-function every(arrayPropertyTypeClasses: JsonDataTypeClass[], arg1: (v: JsonDataTypeClass) => boolean) {
-    throw new Error('Function not implemented.');
-}
 
