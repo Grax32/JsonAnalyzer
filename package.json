@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prestart": "npm run build",
-    "build": "tsc && browserify js-intermediate/json-analyzer.js -o js/json-analyzer.js",
-    "start": "node js/index.js",
+    "build": "tsc && browserify js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
     "tsc-init": "tsc --init"
   },
   "author": "",
