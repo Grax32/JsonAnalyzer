@@ -65,11 +65,11 @@ function visitJsonDocument(json) {
             return previous;
         }
         const results = Object.entries(allKeys).reduce(reduceTypes, {});
-        console.log('allKeys', allKeys);
-        console.log('results', results);
+        return results;
     }
     const visitors = { "array": visitArray };
     console.log('prepare to visit');
-    (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
+    const results = (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
+    document.getElementById("results").innerHTML = JSON.stringify(results, null, 2);
     console.log('done visiting');
 }

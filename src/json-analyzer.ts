@@ -92,13 +92,13 @@ function visitJsonDocument(json: string) {
 
         const results = Object.entries(allKeys).reduce(reduceTypes, {});
 
-        console.log('allKeys', allKeys);
-        console.log('results', results);
+        return results;
     }
 
     const visitors = { "array": visitArray };
 
     console.log('prepare to visit');
-    visitJsonNode(obj, "", visitors);
+    const results = visitJsonNode(obj, "", visitors);
+    document.getElementById("results")!.innerHTML = JSON.stringify(results, null, 2);
     console.log('done visiting');
 }
