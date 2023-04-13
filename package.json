@@ -6,7 +6,8 @@
   "scripts": {
     "prestart": "npm run build",
     "build": "tsc && browserify js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
-    "tsc-init": "tsc --init"
+    "tsc-init": "tsc --init",
+    "publish": "git add . && git commit -m publish && git push origin master && npm publish"
   },
   "author": "",
   "license": "ISC",
