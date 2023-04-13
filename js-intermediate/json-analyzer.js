@@ -1,17 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const json_analyzer_module_1 = require("./json-analyzer-module");
-document.addEventListener("DOMContentLoaded", function () {
-    var json = document.getElementById("sample-json").innerHTML;
+function analyze() {
+    const textArea = document.getElementById("json");
+    const json = textArea.value;
     visitJsonDocument(json);
+}
+function demo() {
+    const jsonSource = document.getElementById("sample-json").innerHTML;
+    const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+    const textArea = document.getElementById("json");
+    textArea.value = json;
+    analyze();
+}
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("analyzeButton").addEventListener("click", analyze);
     document.getElementById("demoButton").addEventListener("click", demo);
-    function demo() {
-        const jsonSource = document.getElementById("sample-json").innerHTML;
-        const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
-        const textArea = document.getElementById("json");
-        textArea.value = json;
-        visitJsonDocument(json);
-    }
 });
 function visitJsonDocument(json) {
     var obj = JSON.parse(json);

@@ -1,22 +1,28 @@
 
 import { JsonDataType, JsonDataTypeClass, JsonVisitorCollectionKeys, getJsonDataType, getJsonDataTypeClass, visitJsonNode } from './json-analyzer-module';
 
-document.addEventListener("DOMContentLoaded", function () {
-    var json = document.getElementById("sample-json")!.innerHTML;
+function analyze() {
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    const json = textArea.value;
+
     visitJsonDocument(json);
+}
 
+function demo() {
+    const jsonSource = document.getElementById("sample-json")!.innerHTML;
+
+    const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
+
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    textArea.value = json;
+
+    analyze();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("analyzeButton")!.addEventListener("click", analyze);
     document.getElementById("demoButton")!.addEventListener("click", demo);
-
-    function demo() {
-        const jsonSource = document.getElementById("sample-json")!.innerHTML;
-
-        const json = JSON.stringify(JSON.parse(jsonSource), null, 2);
-
-        const textArea = document.getElementById("json") as HTMLTextAreaElement;
-        textArea.value = json;
-
-        visitJsonDocument(json);
-    }
 });
 
 function visitJsonDocument(json: string) {
