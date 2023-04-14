@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "prestart": "npm run build",
-    "build": "tsc && browserify src/data.json js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
+    "build": "npm run build-typescript && npm run build-browserify && npm run build-copy-html && npm run build-stamp-version",
+    "build-typescript": "tsc",
+    "build-browserify": "browserify src/data.json js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
+    "build-copy-html": "copyfiles -f src/index.html dist/",
+    "build-stamp-version": "git show --oneline -s > dist/version.txt",
     "tsc-init": "tsc --init",
-    "publish": "git add . && git commit -m publish && git push",
-    "stamp-version": "git show --oneline -s > dist/version.txt"
+    "publish": "git add . && git commit -m publish && git push"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.15.11",
     "browserify": "^17.0.0",
+    "copyfiles": "^2.4.1",
     "typescript": "^5.0.4"
   }
 }
