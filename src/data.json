@@ -18,7 +18,16 @@
         },
         "CA": {
             "Name": "California",
-            "Capital": "Sacramento"
+            "Capital": "Sacramento",
+            "GovernorProfile": {
+                "Name": "Jerry Brown",
+                "Age": 78,
+                "Photo": "https://jsonformatter.org/img/jerry-brown.jpg",
+                "Spouse": {
+                    "Name": "Anne Gust Brown",
+                    "Age": 78
+                }
+            }
         }
     },
     "Actors": [
@@ -82,6 +91,15 @@
                 "Oscar": 2,
                 "Golden Globe": 3,
                 "BAFTA": 1
+            },
+            "stunts": {
+                "jumped off a building": true,
+                "jumped off a cliff": false,
+                "jumped off a plane": true,
+                "stunt double": {
+                    "name": "Tony Dow",
+                    "age": 68
+                }
             }
         }
     ]

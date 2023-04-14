@@ -13,18 +13,23 @@ export function visitArray(path: string, value: any) {
 
     const arrayValues: any[] = value.filter((v: any) => v);
 
+    if (arrayValues.length === 0) {
+        console.log(path + ': Array is empty.  Not a good source for table data');
+        return;
+    }
+
     const arrayPropertyTypeClasses = arrayValues
         .map((v: any) => (v, getJsonDataTypeClass(v)));
 
     const itemType = arrayPropertyTypeClasses[0];
 
     if (!arrayPropertyTypeClasses.every((v: JsonDataTypeClass) => v === itemType)) {
-        console.log('Not all item types are the same.  Not a good source for table data');
+        console.log(path + ': Not all item types are the same.  Not a good source for table data');
         return;
     }
 
     if (itemType !== JsonDataTypeClass.object) {
-        console.log('Array items are not objects.  Not a good source for table data');
+        console.log(path + ': Array items are not objects.  Not a good source for table data');
         return;
     }
 
@@ -46,8 +51,13 @@ export function visitObject(path: string, value: any) {
 
     const dataTypes = Object.values(visitedObject).map((v: any) => getJsonDataType(v));
 
+    if (dataTypes.length === 0) {
+        console.log(path + ': Object is empty.  Not a good source for table data');
+        return;
+    }
+
     if (!dataTypes.every((v: JsonDataType) => v === JsonDataType.object)) {
-        console.log('Not all properties are objects.  Not a good source for table data');
+        console.log(path + ': Not all properties are objects.  Not a good source for table data');
         return;
     }
 
@@ -90,16 +100,27 @@ function getArrayFromObjectOfObjects(obj: { [key: string]: {} }) {
 function getPropertyNames(allKeys: AllKeysCollection, path: string, obj: any) {
     for (let [key, objectValue] of Object.entries(obj)) {
         const dataType = getJsonDataType(objectValue);
-        const propertyPath = path + '.' + key;
+        const propertyPath = (path + '.' + key).replace('||.', '_');
 
-        if (dataType !== JsonDataType.null) {
-            const value = allKeys[propertyPath] || [];
+        switch (dataType) {
+            case JsonDataType.null:
+                // do nothing
+                break;
+            case JsonDataType.object:
+                getPropertyNames(allKeys, propertyPath + '||', objectValue);
+                break;
+            case JsonDataType.array:
+            case JsonDataType.boolean:
+            case JsonDataType.number:
+            case JsonDataType.string:
+                const value = allKeys[propertyPath] || [];
 
-            if (!value.includes(dataType)) {
-                value.push(dataType);
-            }
+                if (!value.includes(dataType)) {
+                    value.push(dataType);
+                }
 
-            allKeys[propertyPath] = value;
+                allKeys[propertyPath] = value;
+                break;
         }
     }
 }
