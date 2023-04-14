@@ -132,14 +132,13 @@
 <body>
     <input type="file" id="fileUpload" hidden>
 
-    <h1>JSON Analyzer
-        <a href="https://app.netlify.com/sites/json-analyzer-grax32/deploys"><img
-                src="https://api.netlify.com/api/v1/badges/e264c957-b270-4c2e-a1f4-ec74edc75af8/deploy-status" /></a>
-    </h1>
-    <p>The JSON Analyzer is a useful tool for analyzing JSON data and can assist in identifying the structure of the data. </p>
-    <p>This tool is freely available and open source, and its source code can be accessed on <a href="https://github.com/Grax32/JsonAnalyzer">GitHub</a>.</p>
-    <section class="main">
+    <h1>JSON Analyzer</h1>
+    <p>The JSON Analyzer is a useful tool for analyzing JSON data and can assist in identifying the structure of the
+        data. </p>
+    <p>This tool is freely available and open source, and its source code is at <a
+            href="https://github.com/Grax32/JsonAnalyzer">https://github.com/Grax32/JsonAnalyzer</a>.</p>
 
+    <section class="main">
         <div class="panel">
             <div class="menubar">
                 <label for="fileUpload"><i class="fas fa-upload"></i>Upload JSON File</label>
@@ -157,7 +156,21 @@
     </section>
 
     <script src="js/json-analyzer.js"></script>
+    <footer>
+        <p>Created by <a href="https://www.grax32.com">Grax32</a></p>
+        <p>Hosted by Netlify: <a href="https://app.netlify.com/sites/json-analyzer-grax32/deploys"><img
+                    src="https://api.netlify.com/api/v1/badges/e264c957-b270-4c2e-a1f4-ec74edc75af8/deploy-status" /></a>
+        </p>
+        <script>
+            async function getVersion() {
+                const versionPage = await fetch("version.txt");
+                const versionText = await versionPage.text();
+                document.write(`<p>Version: ${versionText}</p>`);
+            }
 
+            getVersion();
+        </script>
+    </footer>
 </body>
 
 </html>
