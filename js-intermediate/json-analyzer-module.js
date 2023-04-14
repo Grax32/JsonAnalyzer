@@ -1,55 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.visitJsonNode = exports.visitJsonObject = exports.visitJsonArray = exports.getJsonDataTypeClass = exports.getJsonDataType = exports.JsonDataTypeClass = exports.JsonDataType = void 0;
-var JsonDataType;
-(function (JsonDataType) {
-    JsonDataType["string"] = "string";
-    JsonDataType["number"] = "number";
-    JsonDataType["object"] = "object";
-    JsonDataType["array"] = "array";
-    JsonDataType["boolean"] = "boolean";
-    JsonDataType["null"] = "null";
-})(JsonDataType = exports.JsonDataType || (exports.JsonDataType = {}));
-var JsonDataTypeClass;
-(function (JsonDataTypeClass) {
-    JsonDataTypeClass["value"] = "value";
-    JsonDataTypeClass["object"] = "object";
-    JsonDataTypeClass["array"] = "array";
-})(JsonDataTypeClass = exports.JsonDataTypeClass || (exports.JsonDataTypeClass = {}));
-function getJsonDataType(value) {
-    if (value === null)
-        return JsonDataType.null;
-    if (typeof value === "string")
-        return JsonDataType.string;
-    if (typeof value === "number")
-        return JsonDataType.number;
-    if (typeof value === "boolean")
-        return JsonDataType.boolean;
-    if (typeof value === "object") {
-        return Array.isArray(value) ? JsonDataType.array : JsonDataType.object;
-    }
-    throw new Error("Unknown JSON data type: " + value);
-}
-exports.getJsonDataType = getJsonDataType;
-function getJsonDataTypeClass(value) {
-    const dataType = getJsonDataType(value);
-    switch (dataType) {
-        case JsonDataType.array:
-            return JsonDataTypeClass.array;
-        case JsonDataType.object:
-            return JsonDataTypeClass.object;
-        case JsonDataType.null:
-        case JsonDataType.string:
-        case JsonDataType.number:
-        case JsonDataType.boolean:
-            return JsonDataTypeClass.value;
-        default:
-            throw new Error("Unknown JSON data type: " + dataType);
-    }
-}
-exports.getJsonDataTypeClass = getJsonDataTypeClass;
+exports.visitJsonNode = exports.visitJsonObject = exports.visitJsonArray = void 0;
+const json_analyzer_types_1 = require("./json-analyzer-types");
 function visitVisitors(dataType, visitors) {
-    const dataTypeClass = getJsonDataTypeClass(dataType);
+    const dataTypeClass = (0, json_analyzer_types_1.getJsonDataTypeClass)(dataType);
     const dataTypeVisitor = visitors[dataType];
     const dataTypeClassVisitor = visitors[dataTypeClass];
     const anyVisitor = visitors["any"];
@@ -77,16 +31,16 @@ function visitJsonObject(obj, path, visitTypes) {
 }
 exports.visitJsonObject = visitJsonObject;
 function visitJsonNode(obj, path, visitTypes) {
-    const dataType = getJsonDataType(obj);
+    const dataType = (0, json_analyzer_types_1.getJsonDataType)(obj);
     if (path[0] === ".")
         path = path.slice(1);
     const action = visitVisitors(dataType, visitTypes);
     action(path, obj);
     switch (dataType) {
-        case JsonDataType.array:
+        case json_analyzer_types_1.JsonDataType.array:
             visitJsonArray(obj, path, visitTypes);
             break;
-        case JsonDataType.object:
+        case json_analyzer_types_1.JsonDataType.object:
             visitJsonObject(obj, path, visitTypes);
             break;
     }

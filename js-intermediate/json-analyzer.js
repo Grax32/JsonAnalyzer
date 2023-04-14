@@ -5,6 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const json_analyzer_module_1 = require("./json-analyzer-module");
 const data_json_1 = __importDefault(require("./data.json"));
+const json_analyzer_reporting_1 = require("./json-analyzer-reporting");
+const json_collection_finder_1 = require("./json-collection-finder");
+const merge_results_1 = require("./merge-results");
 function getSampleJson() {
     const jsonSampleSource = JSON.stringify(data_json_1.default, null, 2);
     return jsonSampleSource;
@@ -20,108 +23,66 @@ function analyze() {
         document.getElementById("result").innerHTML = 'Analyze failed with Error: ' + e;
     }
 }
-async function demo() {
+async function getSampleData() {
     const sampleJson = getSampleJson();
     const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
     const textArea = document.getElementById("json");
     textArea.value = jsonSampleSource;
     analyze();
 }
+function readFile() {
+    const fileInput = document.getElementById("fileUpload");
+    return new Promise((resolve, reject) => {
+        const files = fileInput.files;
+        if (!files) {
+            resolve("");
+        }
+        const file = files[0];
+        if (!file) {
+            resolve("");
+        }
+        const reader = new FileReader();
+        reader.onload = function () {
+            const contents = reader.result;
+            resolve(contents);
+        };
+        reader.onerror = reject;
+        reader.readAsText(file);
+    });
+}
+async function loadFile() {
+    const json = await readFile();
+    const textArea = document.getElementById("json");
+    textArea.value = json;
+    analyze();
+}
+function clearJson() {
+    const textArea = document.getElementById("json");
+    textArea.value = "";
+    document.getElementById("result").innerHTML = "";
+}
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("analyzeButton").addEventListener("click", analyze);
-    document.getElementById("demoButton").addEventListener("click", demo);
+    document.getElementById("demoButton").addEventListener("click", getSampleData);
+    document.getElementById("fileUpload").addEventListener("change", loadFile);
+    document.getElementById("clearButton").addEventListener("click", clearJson);
 });
 function visitJsonDocument(json) {
     var obj = JSON.parse(json);
-    const allResults = [];
-    function visitArray(path, value) {
-        console.log('visiting array', path, value);
-        const arrayValues = value.filter((v) => v);
-        const arrayPropertyTypeClasses = arrayValues
-            .map((v) => (v, (0, json_analyzer_module_1.getJsonDataTypeClass)(v)));
-        const itemType = arrayPropertyTypeClasses[0];
-        if (!arrayPropertyTypeClasses.every((v) => v === itemType)) {
-            console.log('Not all item types are the same.  Not a good source for table data');
-            return;
-        }
-        if (itemType !== json_analyzer_module_1.JsonDataTypeClass.object) {
-            console.log('Array items are not objects.  Not a good source for table data');
-            return;
-        }
-        const allKeys = {};
-        function getPropertyNames(path, obj) {
-            for (let [key, objectValue] of Object.entries(obj)) {
-                const dataType = (0, json_analyzer_module_1.getJsonDataType)(objectValue);
-                const propertyPath = path + '.' + key;
-                if (dataType !== json_analyzer_module_1.JsonDataType.null) {
-                    const value = allKeys[propertyPath] || [];
-                    if (!value.includes(dataType)) {
-                        value.push(dataType);
-                    }
-                    allKeys[propertyPath] = value;
-                }
-            }
-        }
-        for (let arrayValue of arrayValues) {
-            getPropertyNames(path, arrayValue);
-        }
-        function mapToClassification(dataTypes) {
-            if (dataTypes.length === 1) {
-                return dataTypes[0];
-            }
-            if (dataTypes.includes(json_analyzer_module_1.JsonDataType.array) || dataTypes.includes(json_analyzer_module_1.JsonDataType.object)) {
-                return "any";
-            }
-            return "value";
-        }
-        function reduceTypes(previous, current, index) {
-            const [key, dataTypes] = current;
-            previous[key] = mapToClassification(dataTypes);
-            return previous;
-        }
-        const results = Object.entries(allKeys).reduce(reduceTypes, {});
-        const resultObj = { path, results };
-        allResults.push(resultObj);
-    }
-    const visitors = { "array": visitArray };
-    console.log('prepare to visit');
-    (0, json_analyzer_module_1.visitJsonNode)(obj, "", visitors);
-    const mergedResults = allResults.reduce((previous, current) => {
-        const { path, results } = current;
-        if (previous[path]) {
-            const left = previous[path];
-            const right = results;
-            for (let key of Object.keys(left)) {
-                if (!right[key]) {
-                    right[key] = left[key];
-                }
-                if (left[key] !== right[key]) {
-                    left[key] = "any";
-                }
-            }
-            for (let key of Object.keys(right)) {
-                if (!left[key]) {
-                    left[key] = right[key];
-                }
-                if (left[key] !== right[key]) {
-                    left[key] = "any";
-                }
-            }
-        }
-        else {
-            previous[path] = results;
-        }
-        return previous;
-    }, {});
-    const outputText = '<h2>Collections</h2>' + Object.entries(mergedResults).reduce((previous, current) => {
-        const [collectionName, properties] = current;
-        const resultText = '<table>' + Object.entries(properties).reduce((previous, current) => {
-            const [key, value] = current;
-            const prettyKey = key.replace(collectionName + '.', '');
-            return previous + `<tr><td>&nbsp;&nbsp;</td><td>${prettyKey}</td><td>${value}</td></tr>\n`;
-        }, "") + '</table>';
-        return previous + '<b>' + collectionName + '</b><br/>\n' + resultText;
-    }, "");
+    console.log('prepare to visit json document');
+    // clear the results from the previous visit
+    (0, json_collection_finder_1.clearResults)();
+    (0, json_analyzer_module_1.visitJsonNode)(obj, "", { "array": json_collection_finder_1.visitArray });
+    const arrayOfObjectsResults = (0, merge_results_1.mergeResults)((0, json_collection_finder_1.getResults)());
+    // clear the results from the previous visit
+    (0, json_collection_finder_1.clearResults)();
+    (0, json_analyzer_module_1.visitJsonNode)(obj, "", { "object": json_collection_finder_1.visitObject });
+    const objectOfObjectsResults = (0, merge_results_1.mergeResults)((0, json_collection_finder_1.getResults)());
+    let outputText = "";
+    outputText += '<h2>Collections - <span class="h2-detail">Arrays of Objects</span></h2>';
+    outputText += (0, json_analyzer_reporting_1.createCollectionReport)(arrayOfObjectsResults);
+    outputText += '<h2>Keyed Objects - <span class="h2-detail">Objects with a unique key</span></h2>';
+    outputText += (0, json_analyzer_reporting_1.createCollectionReport)(objectOfObjectsResults);
     document.getElementById("result").innerHTML = outputText;
     console.log('done visiting');
 }

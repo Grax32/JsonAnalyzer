@@ -1,4 +1,26 @@
 {
+    "States": {
+        "AL": {
+            "Name": "Alabama",
+            "Capital": "Montgomery"
+        },
+        "AK": {
+            "Name": "Alaska",
+            "Capital": "Juneau"
+        },
+        "AZ": {
+            "Name": "Arizona",
+            "Capital": "Phoenix"
+        },
+        "AR": {
+            "Name": "Arkansas",
+            "Capital": "Little Rock"
+        },
+        "CA": {
+            "Name": "California",
+            "Capital": "Sacramento"
+        }
+    },
     "Actors": [
         null,
         {

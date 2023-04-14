@@ -1,7 +1,9 @@
 
-import { JsonDataType, JsonDataTypeClass, JsonVisitorCollectionKeys, getJsonDataType, getJsonDataTypeClass, visitJsonNode } from './json-analyzer-module';
+import { visitJsonNode } from './json-analyzer-module';
 import { default as dataDotJson } from './data.json';
-
+import { createCollectionReport } from './json-analyzer-reporting';
+import { clearResults, getResults, visitArray, visitObject } from './json-collection-finder';
+import { mergeResults } from './merge-results';
 
 function getSampleJson() {
     const jsonSampleSource = JSON.stringify(dataDotJson, null, 2);
@@ -21,7 +23,7 @@ function analyze() {
     }
 }
 
-async function demo(): Promise<void> {
+async function getSampleData(): Promise<void> {
     const sampleJson = getSampleJson();
     const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
 
@@ -31,133 +33,67 @@ async function demo(): Promise<void> {
     analyze();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+function readFile(): Promise<string> {
+    const fileInput = document.getElementById("fileUpload")! as HTMLInputElement;
 
+    return new Promise((resolve, reject) => {
+        const files = fileInput.files;
+        if (!files) { resolve(""); }
+
+        const file = files![0];
+        if (!file) { resolve(""); }
+
+        const reader = new FileReader();
+        reader.onload = function () {
+            const contents = reader.result as string;
+            resolve(contents);
+        }
+        reader.onerror = reject;
+        reader.readAsText(file!);
+    });
+}
+
+async function loadFile() {
+    const json = await readFile();
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    textArea.value = json;
+    analyze();
+}
+
+function clearJson() {
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    textArea.value = "";
+    document.getElementById("result")!.innerHTML = "";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("analyzeButton")!.addEventListener("click", analyze);
-    document.getElementById("demoButton")!.addEventListener("click", demo);
+    document.getElementById("demoButton")!.addEventListener("click", getSampleData);
+    document.getElementById("fileUpload")!.addEventListener("change", loadFile);
+    document.getElementById("clearButton")!.addEventListener("click", clearJson);
 });
 
 function visitJsonDocument(json: string) {
     var obj = JSON.parse(json);
-    const allResults: { path: string; results: { [key: string]: JsonVisitorCollectionKeys; }; }[] = [];
 
-    function visitArray(path: string, value: any) {
-        console.log('visiting array', path, value);
+    console.log('prepare to visit json document');
 
-        const arrayValues: any[] = value.filter((v: any) => v);
+    // clear the results from the previous visit
+    clearResults();
+    visitJsonNode(obj, "", { "array": visitArray });
+    const arrayOfObjectsResults = mergeResults(getResults());
 
-        const arrayPropertyTypeClasses = arrayValues
-            .map((v: any) => (v, getJsonDataTypeClass(v)));
+    // clear the results from the previous visit
+    clearResults();
+    visitJsonNode(obj, "", { "object": visitObject   });
+    const objectOfObjectsResults = mergeResults(getResults());
 
-        const itemType = arrayPropertyTypeClasses[0];
+    let outputText = "";
 
-        if (!arrayPropertyTypeClasses.every((v: JsonDataTypeClass) => v === itemType)) {
-            console.log('Not all item types are the same.  Not a good source for table data');
-            return;
-        }
-
-        if (itemType !== JsonDataTypeClass.object) {
-            console.log('Array items are not objects.  Not a good source for table data');
-            return;
-        }
-
-        const allKeys: { [key: string]: JsonDataType[] } = {};
-
-        function getPropertyNames(path: string, obj: any) {
-            for (let [key, objectValue] of Object.entries(obj)) {
-                const dataType = getJsonDataType(objectValue);
-                const propertyPath = path + '.' + key;
-
-                if (dataType !== JsonDataType.null) {
-                    const value = allKeys[propertyPath] || [];
-
-                    if (!value.includes(dataType)) {
-                        value.push(dataType);
-                    }
-
-                    allKeys[propertyPath] = value;
-                }
-            }
-        }
-
-        for (let arrayValue of arrayValues) {
-            getPropertyNames(path, arrayValue);
-        }
-
-        function mapToClassification(dataTypes: JsonDataType[]): JsonVisitorCollectionKeys {
-
-            if (dataTypes.length === 1) {
-                return dataTypes[0]!;
-            }
-
-            if (dataTypes.includes(JsonDataType.array) || dataTypes.includes(JsonDataType.object)) {
-                return "any";
-            }
-
-            return "value";
-        }
-
-        function reduceTypes(previous: { [key: string]: JsonVisitorCollectionKeys }, current: [string, JsonDataType[]], index: number) {
-            const [key, dataTypes] = current;
-            previous[key] = mapToClassification(dataTypes);
-            return previous;
-        }
-
-        const results = Object.entries(allKeys).reduce(reduceTypes, {});
-        const resultObj = { path, results };
-        allResults.push(resultObj);
-    }
-
-    const visitors = { "array": visitArray };
-
-    console.log('prepare to visit');
-    visitJsonNode(obj, "", visitors);
-
-    const mergedResults = allResults.reduce((previous, current) => {
-        const { path, results } = current;
-        if (previous[path]) {
-            const left = previous[path]!;
-            const right = results!;
-
-            for (let key of Object.keys(left)) {
-                if (!right[key]) {
-                    right[key] = left[key]!;
-                }
-
-                if (left[key] !== right[key]) {
-                    left[key] = "any";
-                }
-            }
-
-            for (let key of Object.keys(right)) {
-                if (!left[key]) {
-                    left[key] = right[key]!;
-                }
-
-                if (left[key] !== right[key]) {
-                    left[key] = "any";
-                }
-            }
-
-        } else {
-            previous[path] = results;
-        }
-        return previous;
-    }, {} as { [key: string]: { [key: string]: JsonVisitorCollectionKeys; }; });
-
-
-    const outputText = '<h2>Collections</h2>' + Object.entries( mergedResults).reduce((previous, current) => {
-        const [collectionName, properties] = current;
-
-        const resultText = '<table>' + Object.entries(properties).reduce((previous, current) => {
-            const [key, value] = current;
-            const prettyKey = key.replace(collectionName + '.', '');
-            return previous + `<tr><td>&nbsp;&nbsp;</td><td>${prettyKey}</td><td>${value}</td></tr>\n`;
-        }, "") + '</table>';
-
-        return previous + '<b>' + collectionName + '</b><br/>\n' + resultText;
-    }, "");
-        
+    outputText += '<h2>Collections - <span class="h2-detail">Arrays of Objects</span></h2>';
+    outputText += createCollectionReport(arrayOfObjectsResults);
+    outputText += '<h2>Keyed Objects - <span class="h2-detail">Objects with a unique key</span></h2>';
+    outputText += createCollectionReport(objectOfObjectsResults);
 
     document.getElementById("result")!.innerHTML = outputText;
     console.log('done visiting');
