@@ -11,7 +11,8 @@
     "build-copy-html": "copyfiles -f src/index.html dist/",
     "build-stamp-version": "git show --oneline -s > dist/version.txt",
     "tsc-init": "tsc --init",
-    "publish": "git add . && git commit -m publish && git push"
+    "publish": "git add . && git commit -m publish && git push",
+    "start": "http-server dist -p 14880 -o"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "@types/node": "^18.15.11",
     "browserify": "^17.0.0",
     "copyfiles": "^2.4.1",
+    "http-server": "^14.1.1",
     "typescript": "^5.0.4"
   }
 }

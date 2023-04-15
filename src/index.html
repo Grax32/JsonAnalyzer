@@ -126,6 +126,10 @@
             background-color: #ccc;
             padding: 5px 10px;
         }
+
+        #urlInput {
+            margin: 5px;
+        }
     </style>
 </head>
 
@@ -142,16 +146,22 @@
         <div class="panel">
             <div class="menubar">
                 <label for="fileUpload"><i class="fas fa-upload"></i>Upload JSON File</label>
+                <button id="urlButton"><i class="fas fa-link"></i>Load from URL</button>
                 <button id="demoButton"><i class="fas fa-chart-bar"></i>Insert Sample Data</button>
                 <button id="clearButton"><i class="fas fa-trash"></i>Clear</button>
                 <button id="analyzeButton"><i class="fas fa-glasses"></i>Analyze</button>
+            </div>
+
+            <div id="urlInput" style="display: none">
+                <label for="url">URL:</label>
+                <input type="text" id="url" placeholder="Enter a URL to load JSON from" />
+                <button id="urlLoadButton"><i class="fas fa-link"></i>Load</button>
             </div>
 
             <textarea id="json" rows="10" cols="80" placeholder="Enter a JSON string to analyze"></textarea>
         </div>
         <div class="panel">
             <p id="result"></p>
-
         </div>
     </section>
 
@@ -161,11 +171,12 @@
         <p>Hosted by Netlify: <a href="https://app.netlify.com/sites/json-analyzer-grax32/deploys"><img
                     src="https://api.netlify.com/api/v1/badges/e264c957-b270-4c2e-a1f4-ec74edc75af8/deploy-status" /></a>
         </p>
+        <p id="version"></p>
         <script>
             async function getVersion() {
                 const versionPage = await fetch("version.txt");
                 const versionText = await versionPage.text();
-                document.write(`<p>Version: ${versionText}</p>`);
+                document.getElementById("version").innerHTML = `Version: ${versionText}`;
             }
 
             getVersion();

@@ -5,30 +5,48 @@ import { createCollectionReport } from './json-analyzer-reporting';
 import { clearResults, getResults, visitArray, visitObject } from './json-collection-finder';
 import { mergeResults } from './merge-results';
 
+function setResult(result: string) {
+    document.getElementById("result")!.innerHTML = result;
+}
+
+function setJsonValue(json: string) {
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    textArea.value = json;
+}
+
+function getJsonValue() {
+    const textArea = document.getElementById("json") as HTMLTextAreaElement;
+    return textArea.value;
+}
+
+function formatJsonValue() {
+    const json = getJsonValue();
+    const formattedJson = JSON.stringify(JSON.parse(json), null, 2);
+    setJsonValue(formattedJson);
+}
+
 function getSampleJson() {
     const jsonSampleSource = JSON.stringify(dataDotJson, null, 2);
     return jsonSampleSource;
 }
 
 function analyze() {
-    const textArea = document.getElementById("json") as HTMLTextAreaElement;
-    const json = textArea.value;
+    const json = getJsonValue();
 
-    document.getElementById("result")!.innerHTML = 'Analyzing...';
+    setResult('Analyzing...');
 
     try {
         visitJsonDocument(json);
     } catch (e) {
-        document.getElementById("result")!.innerHTML = 'Analyze failed with Error: ' + e;
+        setResult('Analyze failed with Error: ' + e);
     }
 }
 
 async function getSampleData(): Promise<void> {
     const sampleJson = getSampleJson();
-    const jsonSampleSource = JSON.stringify(JSON.parse(sampleJson), null, 2);
 
-    const textArea = document.getElementById("json") as HTMLTextAreaElement;
-    textArea.value = jsonSampleSource;
+    setJsonValue(sampleJson);
+    formatJsonValue();
 
     analyze();
 }
@@ -55,22 +73,53 @@ function readFile(): Promise<string> {
 
 async function loadFile() {
     const json = await readFile();
-    const textArea = document.getElementById("json") as HTMLTextAreaElement;
-    textArea.value = json;
+    setJsonValue(json);
     analyze();
 }
 
 function clearJson() {
-    const textArea = document.getElementById("json") as HTMLTextAreaElement;
-    textArea.value = "";
-    document.getElementById("result")!.innerHTML = "";
+    setJsonValue("");
+    setResult("");
+}
+
+async function fetchUrl(url: string) {
+    const response = await fetch(url);
+    const text = await response.text();
+    return text;
+}
+
+async function analyzeSpecifiedUrl() {
+    const urlLoadButton = document.getElementById("urlLoadButton")!
+    const buttonText = urlLoadButton.innerHTML;
+    urlLoadButton.innerHTML = "Loading...";
+    const url = document.getElementById("url") as HTMLInputElement;
+    const result = await fetchUrl(url.value);
+    setJsonValue(result);
+    analyze();
+
+    localStorage.setItem("url", url.value);
+    urlLoadButton.innerHTML = buttonText;
+}
+
+function switchUrlInputDisplay() {
+    const urlInput = document.getElementById("urlInput") as HTMLDivElement;
+
+    if (urlInput.style.display === "none") {
+        urlInput.style.display = "block";
+    } else {
+        urlInput.style.display = "none";
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    (document.getElementById("url")! as HTMLInputElement).value = localStorage.getItem("url") || "";
     document.getElementById("analyzeButton")!.addEventListener("click", analyze);
     document.getElementById("demoButton")!.addEventListener("click", getSampleData);
     document.getElementById("fileUpload")!.addEventListener("change", loadFile);
     document.getElementById("clearButton")!.addEventListener("click", clearJson);
+    document.getElementById("urlButton")!.addEventListener("click", switchUrlInputDisplay);
+    document.getElementById("urlLoadButton")!.addEventListener("click", analyzeSpecifiedUrl);
 });
 
 function visitJsonDocument(json: string) {
@@ -85,7 +134,7 @@ function visitJsonDocument(json: string) {
 
     // clear the results from the previous visit
     clearResults();
-    visitJsonNode(obj, "", { "object": visitObject   });
+    visitJsonNode(obj, "", { "object": visitObject });
     const objectOfObjectsResults = mergeResults(getResults());
 
     let outputText = "";
