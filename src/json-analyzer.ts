@@ -4,6 +4,7 @@ import { default as dataDotJson } from './data.json';
 import { createCollectionReport } from './json-analyzer-reporting';
 import { clearResults, getResults, visitArray, visitObject } from './json-collection-finder';
 import { mergeResults } from './merge-results';
+import { jsonCloser } from './json-closer';
 
 function setResult(result: string) {
     document.getElementById("result")!.innerHTML = result;
@@ -32,11 +33,17 @@ function getSampleJson() {
 
 function analyze() {
     const json = getJsonValue();
+    const fixedJson = jsonCloser(json);
+
+    if (fixedJson !== json) {
+        setJsonValue(fixedJson);
+        formatJsonValue();
+    }
 
     setResult('Analyzing...');
 
     try {
-        visitJsonDocument(json);
+        visitJsonDocument(fixedJson);
     } catch (e) {
         setResult('Analyze failed with Error: ' + e);
     }
@@ -111,19 +118,21 @@ function switchUrlInputDisplay() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+export function initializeDocument() {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    (document.getElementById("url")! as HTMLInputElement).value = localStorage.getItem("url") || "";
-    document.getElementById("analyzeButton")!.addEventListener("click", analyze);
-    document.getElementById("demoButton")!.addEventListener("click", getSampleData);
-    document.getElementById("fileUpload")!.addEventListener("change", loadFile);
-    document.getElementById("clearButton")!.addEventListener("click", clearJson);
-    document.getElementById("urlButton")!.addEventListener("click", switchUrlInputDisplay);
-    document.getElementById("urlLoadButton")!.addEventListener("click", analyzeSpecifiedUrl);
-});
+        (document.getElementById("url")! as HTMLInputElement).value = localStorage.getItem("url") || "";
+        document.getElementById("analyzeButton")!.addEventListener("click", analyze);
+        document.getElementById("demoButton")!.addEventListener("click", getSampleData);
+        document.getElementById("fileUpload")!.addEventListener("change", loadFile);
+        document.getElementById("clearButton")!.addEventListener("click", clearJson);
+        document.getElementById("urlButton")!.addEventListener("click", switchUrlInputDisplay);
+        document.getElementById("urlLoadButton")!.addEventListener("click", analyzeSpecifiedUrl);
+    });
+}
 
 function visitJsonDocument(json: string) {
-    var obj = JSON.parse(json);
+    const obj = JSON.parse(json);
 
     console.log('prepare to visit json document');
 

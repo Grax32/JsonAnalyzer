@@ -7,7 +7,7 @@
     "prestart": "npm run build",
     "build": "npm run build-typescript && npm run build-browserify && npm run build-copy-html && npm run build-stamp-version",
     "build-typescript": "tsc",
-    "build-browserify": "browserify src/data.json js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
+    "build-browserify": "browserify src/data.json js-intermediate/index.js -o dist/js/json-analyzer.js",
     "build-copy-html": "copyfiles -f src/*.html src/*.css dist/",
     "build-stamp-version": "node update-version.js",
     "tsc-init": "tsc --init",

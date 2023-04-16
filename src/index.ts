@@ -1,5 +1,6 @@
+import { initializeDocument } from "./json-analyzer";
+import { jsonCloser } from "./json-closer";
 
-function analyze_json(json: string): void {
-    const obj = JSON.parse(json);
-    console.log(obj);
-}
+initializeDocument();
+
+const references = { jsonCloser };
