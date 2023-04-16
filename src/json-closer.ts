@@ -54,10 +54,10 @@ export function jsonCloser(src: string) {
 
         // if segment has 3 elements, it means there is a key with no value
         if (segment.length === 3) {
-            if (segment[1]!.trim() === ':') {
-                src += '""';
+            if (segment[2]!.trim() === ':') {
+                src += '"auto-property"';
             } else {
-                src += ':""';
+                src += ': "auto-property"';
             }
         }
     }
@@ -75,6 +75,6 @@ export function jsonCloser(src: string) {
     }
 
     while (popChar()) { }
-    
+
     return src;
 }
