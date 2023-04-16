@@ -42,10 +42,23 @@ export function jsonCloser(src: string) {
     }
 
     if (inQuotedString) {
-        src += '"';
+        src += '-autoclose"';
+    }
 
-        if (openChars[openChars.length - 1] === '{') {
-            src += ': ""';
+    if (openChars[openChars.length - 1] === '{') {
+
+        const startBlock = src.lastIndexOf('{');
+
+        // get segment of string from start of block to end of string, replace escaped quotes with empty string
+        const segment = src.substring(startBlock).replace('\\"', '').split('"');
+
+        // if segment has 3 elements, it means there is a key with no value
+        if (segment.length === 3) {
+            if (segment[1]!.trim() === ':') {
+                src += '""';
+            } else {
+                src += ':""';
+            }
         }
     }
 
@@ -62,6 +75,6 @@ export function jsonCloser(src: string) {
     }
 
     while (popChar()) { }
-
+    
     return src;
 }
