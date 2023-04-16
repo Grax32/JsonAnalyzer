@@ -1,0 +1,162 @@
+svg {
+    margin-right: 5px;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+.menubar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.menubar label,
+.menubar button {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #eee;
+    box-shadow: 1px 1px 1px black;
+}
+
+.menubar label:hover {
+    background-color: #ddd;
+}
+
+.menubar button:hover {
+    background-color: #ddd;
+}
+
+.menubar button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.menubar button:disabled:hover {
+    background-color: #ccc;
+}
+
+#json {
+    width: 100%;
+    font-family: Consolas, monospace;
+    font-size: 14px;
+}
+
+#analyzeButton {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+#analyzeButton:hover {
+    background-color: #ddd;
+}
+
+#analyzeButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#analyzeButton:disabled:hover {
+    background-color: #ccc;
+}
+
+#result {
+    margin-top: 10px;
+}
+
+#result table {
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+#result table th {
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: #eee;
+}
+
+#result table td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: #eee;
+}
+
+section.main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 200px;
+}
+
+div.panel {
+    padding: 1em;
+    border: 1px solid #ccc;
+    flex-grow: 1;
+}
+
+.collectionname {
+    margin-top: 4px;
+    font-weight: bold;
+    background-color: #ccc;
+    padding: 5px 10px;
+}
+
+#urlInput {
+    margin: 5px;
+}
+
+
+.main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /* Set a minimum height to avoid the container collapsing */
+    min-height: 300px;
+  }
+  
+  .panel {
+    width: 48%;
+    /* Add margin to create some spacing between items */
+    margin-bottom: 10px;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    .main {
+      flex-direction: column;
+    }
+  
+    .panel {
+      /* Set width to 100% to take up full width in a column layout */
+      width: 100%;
+      padding: 2%;
+    }
+  }
+  
+  footer {
+    width: 100%;
+    height: 150px;
+    background-color: #eee;
+    border: 2px solid black;
+    box-sizing: border-box;
+    padding: 10px;
+    bottom: 0;
+    margin: 0;
+    left: 0;
+    font-size: 9px;
+  }

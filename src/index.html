@@ -4,133 +4,8 @@
     <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
         integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
         crossorigin="anonymous"></script>
-    <script>
-        const exports = {};
-    </script>
-    <style>
-        svg {
-            margin-right: 5px;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-        }
-
-        h1 {
-            font-size: 24px;
-        }
-
-        .menubar {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .menubar label,
-        .menubar button {
-            cursor: pointer;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #eee;
-            box-shadow: 1px 1px 1px black;
-        }
-
-        .menubar label:hover {
-            background-color: #ddd;
-        }
-
-        .menubar button:hover {
-            background-color: #ddd;
-        }
-
-        .menubar button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .menubar button:disabled:hover {
-            background-color: #ccc;
-        }
-
-        #json {
-            width: 100%;
-            font-family: Consolas, monospace;
-            font-size: 14px;
-        }
-
-        #analyzeButton {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #eee;
-            cursor: pointer;
-        }
-
-        #analyzeButton:hover {
-            background-color: #ddd;
-        }
-
-        #analyzeButton:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        #analyzeButton:disabled:hover {
-            background-color: #ccc;
-        }
-
-        #result {
-            margin-top: 10px;
-        }
-
-        #result table {
-            border-collapse: collapse;
-            border: 1px solid #ccc;
-            width: 100%;
-        }
-
-        #result table th {
-            border: 1px solid #ccc;
-            padding: 5px;
-            background-color: #eee;
-        }
-
-        #result table td {
-            border: 1px solid #ccc;
-            padding: 5px;
-            background-color: #eee;
-        }
-
-        section.main {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: flex-start;
-            width: 100%;
-            min-height: 200px;
-        }
-
-        div.panel {
-            padding: 1em;
-            border: 1px solid #ccc;
-            flex-grow: 1;
-        }
-
-        .collectionname {
-            margin-top: 4px;
-            font-weight: bold;
-            background-color: #ccc;
-            padding: 5px 10px;
-        }
-
-        #urlInput {
-            margin: 5px;
-        }
-    </style>
+    <script>const exports = {};</script>
+    <link rel="stylesheet" href="site.css"/>
 </head>
 
 <body>
@@ -172,11 +47,19 @@
                     src="https://api.netlify.com/api/v1/badges/e264c957-b270-4c2e-a1f4-ec74edc75af8/deploy-status" /></a>
         </p>
         <p id="version"></p>
+        <p>Source Code: <a
+            href="https://github.com/Grax32/JsonAnalyzer">https://github.com/Grax32/JsonAnalyzer</a>.</p>
         <script>
             async function getVersion() {
                 const versionPage = await fetch("version.txt");
                 const versionText = await versionPage.text();
-                document.getElementById("version").innerHTML = `Version: ${versionText}`;
+                const versionInfo = JSON.parse(versionText);
+
+                document.getElementById("version").innerHTML = `
+                    Change Nickname: ${versionInfo.changeIdentifier}<br />
+                    Git Commit Id: ${versionInfo.version}<br />
+                    Build Time: ${versionInfo.compileTime}`;
+
             }
 
             getVersion();

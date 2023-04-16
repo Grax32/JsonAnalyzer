@@ -8,17 +8,18 @@
     "build": "npm run build-typescript && npm run build-browserify && npm run build-copy-html && npm run build-stamp-version",
     "build-typescript": "tsc",
     "build-browserify": "browserify src/data.json js-intermediate/json-analyzer.js -o dist/js/json-analyzer.js",
-    "build-copy-html": "copyfiles -f src/index.html dist/",
-    "build-stamp-version": "git show --oneline -s > dist/version.txt",
+    "build-copy-html": "copyfiles -f src/*.html src/*.css dist/",
+    "build-stamp-version": "node update-version.js",
     "tsc-init": "tsc --init",
     "publish": "git add . && git commit -m publish && git push",
-    "start": "http-server dist -p 14880 -o"
+    "start": "http-server -c-1 dist -p 14880 -o"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.15.11",
     "browserify": "^17.0.0",
+    "child_process": "^1.0.2",
     "copyfiles": "^2.4.1",
     "http-server": "^14.1.1",
     "typescript": "^5.0.4"
