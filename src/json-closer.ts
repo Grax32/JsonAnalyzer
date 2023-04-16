@@ -43,6 +43,10 @@ export function jsonCloser(src: string) {
 
     if (inQuotedString) {
         src += '"';
+
+        if (openChars[openChars.length - 1] === '{') {
+            src += ': ""';
+        }
     }
 
     function popChar() {
